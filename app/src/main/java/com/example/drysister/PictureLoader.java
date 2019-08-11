@@ -6,6 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.ImageView;
 
 
@@ -34,13 +35,13 @@ public class PictureLoader {
             }
         }
     };
-    public void load(ImageView loadImg, final String imgUrl){
+    public void load(ImageView loadImg, String imgUrl) {
         this.loadImg = loadImg;
         this.imgUrl = imgUrl;
         Drawable drawable = loadImg.getDrawable();
-        if(drawable != null && drawable instanceof BitmapDrawable){
+        if (drawable != null && drawable instanceof BitmapDrawable) {
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            if(bitmap != null &&!bitmap.isRecycled()){
+            if (bitmap != null && !bitmap.isRecycled()) {
                 bitmap.recycle();
             }
         }
@@ -48,28 +49,33 @@ public class PictureLoader {
             @Override
             public void run() {
                 try {
-                    URL url = new URL(imgUrl);
+                    URL url = new URL(PictureLoader.this.imgUrl);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    Log.i("好好学习1", "run: " +PictureLoader.this.imgUrl);
                     conn.setRequestMethod("GET");
                     conn.setReadTimeout(8000);
-                    if(conn.getResponseCode() == 200){
+                    if (conn.getResponseCode() == 200) {
                         InputStream in = conn.getInputStream();
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                         byte[] bytes = new byte[1024];
                         int length = -1;
-                        while ((length = in.read(bytes)) != -1){
-                            outputStream.write(bytes,0,length);
+                        while ((length = in.read(bytes)) != -1) {
+                            outputStream.write(bytes, 0, length);
                         }
                         picByte = outputStream.toByteArray();
                         in.close();
                         outputStream.close();
-                       handler.sendEmptyMessage(0x123);
+                        handler.sendEmptyMessage(0x123);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
 
                 }
             }
-        });
+        }).start();
     }
+
+
 }
+
+
