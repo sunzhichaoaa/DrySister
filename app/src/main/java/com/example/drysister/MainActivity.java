@@ -2,6 +2,7 @@ package com.example.drysister;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> urls;
     private int curPos = 0;
     private PictureLoader loader;
+    private String aaa = "http://ww4.sinaimg.cn/large/610dc034jw1f6ipaai7wgj20dw0kugp4.jpg";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +24,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initData();
         showBtn = (Button) findViewById(R.id.btn);
         showImg = (ImageView) findViewById(R.id.img);
+        loader.load(showImg,aaa);
         showBtn.setOnClickListener(this);
+
     }
     private void initData() {
         urls = new ArrayList<>();
@@ -45,7 +49,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(curPos > 9){
                     curPos = 0;
                 }
+                Log.i("好好学习2", "onClick: "+urls.get(curPos));
                 loader.load(showImg,urls.get(curPos));
+
                 curPos++;
                 break;
              default:
