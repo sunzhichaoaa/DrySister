@@ -10,15 +10,26 @@
 
     <ImageView
         android:id="@+id/img"
-        android:layout_width="500px"
-        android:layout_height="500px"
+        android:layout_width="1080px"
+        android:layout_height="1300px"
         android:layout_gravity="center"/>
-    <Button
-        android:id="@+id/btn"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="下一个"/>
-
+        android:orientation="horizontal">
+    <Button
+        android:id="@+id/next_sister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="下一个妹子"/>
+        <Button
+            android:id="@+id/next_page"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="下一页妹子"/>
+    </LinearLayout>
 
 
 </LinearLayout>

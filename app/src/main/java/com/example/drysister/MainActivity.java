@@ -1,5 +1,6 @@
 package com.example.drysister;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,55 +8,78 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.drysister.Bean.Sister;
+import com.example.drysister.network.SisterApi;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button showBtn;
     private ImageView showImg;
-    private ArrayList<String> urls;
+    private Button refreshBtn;
+
+    private ArrayList<Sister> data;
     private int curPos = 0;
+    private int page = 1;
     private PictureLoader loader;
-    private String aaa = "http://ww4.sinaimg.cn/large/610dc034jw1f6ipaai7wgj20dw0kugp4.jpg";
+    private SisterApi sisterApi;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         loader = new PictureLoader();
+        sisterApi = new SisterApi();
         initData();
-        showBtn = (Button) findViewById(R.id.btn);
+        showBtn = (Button) findViewById(R.id.next_sister);
         showImg = (ImageView) findViewById(R.id.img);
-        loader.load(showImg,aaa);
+        refreshBtn = findViewById(R.id.next_page);
         showBtn.setOnClickListener(this);
+        refreshBtn.setOnClickListener(this);
 
     }
     private void initData() {
-        urls = new ArrayList<>();
-        urls.add("http://ww4.sinaimg.cn/large/610dc034jw1f6ipaai7wgj20dw0kugp4.jpg");
-        urls.add("http://ww3.sinaimg.cn/large/610dc034jw1f6gcxc1t7vj20hs0hsgo1.jpg");
-        urls.add("http://ww4.sinaimg.cn/large/610dc034jw1f6f5ktcyk0j20u011hacg.jpg");
-        urls.add("http://ww1.sinaimg.cn/large/610dc034jw1f6e1f1qmg3j20u00u0djp.jpg");
-        urls.add("http://ww3.sinaimg.cn/large/610dc034jw1f6aipo68yvj20qo0qoaee.jpg");
-        urls.add("http://ww3.sinaimg.cn/large/610dc034jw1f69c9e22xjj20u011hjuu.jpg");
-        urls.add("http://ww3.sinaimg.cn/large/610dc034jw1f689lmaf7qj20u00u00v7.jpg");
-        urls.add("http://ww3.sinaimg.cn/large/c85e4a5cjw1f671i8gt1rj20vy0vydsz.jpg");
-        urls.add("http://ww2.sinaimg.cn/large/610dc034jw1f65f0oqodoj20qo0hntc9.jpg");
-        urls.add("http://ww2.sinaimg.cn/large/c85e4a5cgw1f62hzfvzwwj20hs0qogpo.jpg");
+        data = new ArrayList<>();
+        new SisterTask(page).execute();
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.btn:
-                if(curPos > 9){
+        switch (v.getId()) {
+            case R.id.next_sister:
+                if (curPos > 9) {
                     curPos = 0;
                 }
-                Log.i("好好学习2", "onClick: "+urls.get(curPos));
-                loader.load(showImg,urls.get(curPos));
-
+                Log.i("好好学习2", "onClick: " + data.get(curPos).getUrl());
+                loader.load(showImg, data.get(curPos).getUrl());
                 curPos++;
                 break;
-             default:
-                 break;
+            case R.id.next_page:
+                page++;
+                new SisterTask(page).execute();
+                curPos = 0;
+                break;
+            default:
+                break;
+        }
+    }
+    private class SisterTask extends AsyncTask<Void,Void,ArrayList<Sister>>{
+    private int page;
+    public SisterTask(int page){
+        this.page = page;
+    }
+
+        @Override
+        protected ArrayList<Sister> doInBackground(Void... voids) {
+            return sisterApi.fetchSister(10,page);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Sister> sisters) {
+            super.onPostExecute(sisters);
+            data.clear();
+            data.addAll(sisters);
         }
     }
 }
